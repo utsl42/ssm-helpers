@@ -17,7 +17,7 @@ func NewPool(profiles []string, regions []string, logger *log.Logger) *Pool {
 	sessions := map[string]*Session{}
 
 	for _, region := range regions {
-		if stsCredentialsSet() {
+		if envCredentialsSet() {
 			session := newSession("", region, logger)
 			name := fmt.Sprintf("default-%s", region)
 			sessions[name] = session
@@ -35,12 +35,11 @@ func NewPool(profiles []string, regions []string, logger *log.Logger) *Pool {
 	return &Pool{Sessions: sessions}
 }
 
-func stsCredentialsSet() bool {
-	sessionToken := os.Getenv("AWS_SESSION_TOKEN")
+func envCredentialsSet() bool {
 	accessKeyID := os.Getenv("AWS_ACCESS_KEY_ID")
 	secretAccessKey := os.Getenv("AWS_SECRET_ACCESS_KEY")
 
-	if sessionToken == "" || accessKeyID == "" || secretAccessKey == "" {
+	if accessKeyID == "" || secretAccessKey == "" {
 		return false
 	}
 
